@@ -32,10 +32,10 @@ public:
 		return TabSize;
 	}
 	virtual TKey GetKey() const {
-		return GetKey(Current_pos); //либо реализовать самим метод получения с позиции
+		return GetKey(Current_pos); //Р»РёР±Рѕ СЂРµР°Р»РёР·РѕРІР°С‚СЊ СЃР°РјРёРј РјРµС‚РѕРґ РїРѕР»СѓС‡РµРЅРёСЏ СЃ РїРѕР·РёС†РёРё
 	}
 	virtual PTDataValue GetValuePtr() const {
-		return GetValuePtr(Current_pos); //самим реализовать метод получения с позиции
+		return GetValuePtr(Current_pos); //СЃР°РјРёРј СЂРµР°Р»РёР·РѕРІР°С‚СЊ РјРµС‚РѕРґ РїРѕР»СѓС‡РµРЅРёСЏ СЃ РїРѕР·РёС†РёРё
 	}
 	virtual TKey GetKey(TDataPos mode)const {
 		int pos = -1;

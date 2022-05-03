@@ -31,7 +31,7 @@ public:
 	PTDataValue GetValue() {
 		return pValue;
 	}
-	virtual TDataValue* GetCopy() {
+	virtual TDataValue* GetCopy() override {
 		return new TTabRecord(Key, pValue); //!!!!!!
 	}
 	TTabRecord& operator=(const TTabRecord& tr) {
