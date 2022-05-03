@@ -2,94 +2,125 @@
 #include "TTabRecord.h"
 #include "TTable.h"
 #define TabMaxSize 25;
-enum TDataPos{First_pos,Current_pos,Last_pos};
-class TArrayTable : public TTable
-{
-protected:
-	PTTabRecord* pRecs;
-	int TabSize;
-	int CurPos;
+
+enum class TDataPos{First_pos,Current_pos,Last_pos};
+
+class TArrayTable : public TTable {
 public:
-	TArrayTable(int size = 100) :TabSize(size) {
-		pRecs = new PTTabRecord[TabSize];
-		for (int i = 0; i < TabSize; i++)
-		{
-			pRecs[i] = nullptr;
-		}
-		CurPos = 0;
-	}
-	virtual ~TArrayTable() {
-		for (int i = 0; i < DataCount; i++)
-		{
-			delete pRecs[i];
-		}
-		delete[] pRecs;
-	}
-	virtual bool IsFull() const {
-		return DataCount >= TabSize;
-	}
-	int GetTabSize() const {
-		return TabSize;
-	}
-	virtual TKey GetKey() const {
-		return GetKey(Current_pos); //либо реализовать самим метод получения с позиции
-	}
-	virtual PTDataValue GetValuePtr() const {
-		return GetValuePtr(Current_pos); //самим реализовать метод получения с позиции
-	}
-	virtual TKey GetKey(TDataPos mode)const {
-		int pos = -1;
-		if (!IsEmpty()) {
-			switch (mode)
-			{
-			case First_pos:
-				pos = 0;
-				break;
-			case Last_pos:
-				pos = DataCount - 1;
-				break;
-			default:
-				pos = CurPos;
-				break;
-			}
-		}
-		return (pos == -1) ? std::string("") : pRecs[pos]->Key;
-	}
-	virtual PTDataValue GetValuePtr(TDataPos mode) const {
-		int pos = -1;
-		if (!IsEmpty()) {
-			switch (mode)
-			{
-			case First_pos:
-				pos = 0;
-				break;
-			case Last_pos:
-				pos = DataCount - 1;
-				break;
-			default:
-				pos = CurPos;
-				break;
-			}
-		}
-		return (pos == -1) ? nullptr : pRecs[pos]->pValue;
-	}
-	bool IsTabEnded() const {
-		return CurPos >= TabSize;
-	}
-	bool Reset() {
-		CurPos = 0;
-		return IsTabEnded();
-	}
-	bool GoNext() {
-		if (!IsTabEnded())
-			CurPos++;
-		return IsTabEnded();
-	}
-	int GetCurPos() const {
-		return CurPos;
-	}
-	virtual bool SetCurPos(int pos) {
-		CurPos = ((pos > -1) && (pos < DataCount)) ? pos : 0;
-		return IsTabEnded();
-	}
+  explicit TArrayTable(int size = 100) : m_TabSize(size) {
+    m_Records = new PTTabRecord[m_TabSize];
+      for (int i = 0; i < m_TabSize; i++) {
+        m_Records[i] = nullptr;
+      }
+    m_CurrentPosition = 0;
+  }
+  ~TArrayTable() override {
+      for (int i = 0; i < m_DataCount; i++)
+      {
+          delete m_Records[i];
+      }
+      delete[] m_Records;
+  }
+
+  TArrayTable(const TArrayTable &t)  : TTable(t) {
+    m_CurrentPosition = t.m_CurrentPosition;
+    m_TabSize = t.m_TabSize;
+
+    m_Records = new PTTabRecord[m_TabSize];
+    for (int i = 0; i < m_TabSize; i++) {
+      m_Records[i] = dynamic_cast<TTabRecord*>(t.m_Records[i]->GetCopy());
+    }
+  }
+
+  TArrayTable &operator=(const TArrayTable &t) {
+    if (this == &t) {
+      return *this;
+    }
+
+    m_CurrentPosition = t.m_CurrentPosition;
+    m_TabSize = t.m_TabSize;
+
+    m_Records = new PTTabRecord[m_TabSize];
+    for (int i = 0; i < m_TabSize; i++) {
+      m_Records[i] = dynamic_cast<TTabRecord*>(t.m_Records[i]->GetCopy());
+    }
+
+    return *this;
+  }
+  [[nodiscard]] bool IsFull() const override {
+      return m_DataCount >= m_TabSize;
+  }
+  [[nodiscard]] int GetTabSize() const {
+      return m_TabSize;
+  }
+  [[nodiscard]] TKey GetKey() const override {
+      return GetKey(TDataPos::Current_pos); //либо реализовать самим метод получения с позиции
+  }
+  [[nodiscard]] virtual PTDataValue GetValuePtr() const {
+      return GetValuePtr(TDataPos::Current_pos);
+  }
+  [[nodiscard]] virtual TKey GetKey(TDataPos mode)const {
+      int pos = -1;
+      if (!IsEmpty()) {
+          switch (mode)
+          {
+          case TDataPos::First_pos:
+              pos = 0;
+              break;
+          case TDataPos::Last_pos:
+              pos = m_DataCount - 1;
+              break;
+          default:
+              pos = m_CurrentPosition;
+              break;
+          }
+      }
+      return (pos == -1) ? std::string("") : m_Records[pos]->m_Key;
+  }
+
+  [[nodiscard]] virtual PTDataValue GetValuePtr(TDataPos mode) const {
+      int pos = -1;
+      if (!IsEmpty()) {
+          switch (mode)
+          {
+          case TDataPos::First_pos:
+              pos = 0;
+              break;
+          case TDataPos::Last_pos:
+              pos = m_DataCount - 1;
+              break;
+          default:
+              pos = m_CurrentPosition;
+              break;
+          }
+      }
+      return (pos == -1) ? nullptr : m_Records[pos]->m_Value;
+  }
+  [[nodiscard]] bool IsTabEnded() const override {
+      return m_CurrentPosition >= m_DataCount;
+  }
+  bool Reset() override {
+    m_CurrentPosition = 0;
+      return IsTabEnded();
+  }
+  bool GoNext() override {
+      if (!IsTabEnded())
+          m_CurrentPosition++;
+      return IsTabEnded();
+  }
+  [[nodiscard]] int GetCurPos() const {
+      return m_CurrentPosition;
+  }
+  virtual bool SetCurPos(int pos) {
+    m_CurrentPosition = ((pos > -1) && (pos < m_DataCount)) ? pos : 0;
+      return IsTabEnded();
+  }
+
+  [[nodiscard]] PTDataValue GetValue() const override {
+    return GetValuePtr();
+  }
+ protected:
+  PTTabRecord* m_Records;
+  int m_TabSize;
+  int m_CurrentPosition;
 };

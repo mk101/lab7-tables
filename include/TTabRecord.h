@@ -1,55 +1,64 @@
 #pragma once
 #include <iostream>
+#include <sstream>
 #include "TDataValue.h"
+
 typedef std::string TKey;
 class TTabRecord;
 typedef TTabRecord* PTTabRecord;
 
-class TTabRecord :public TDataValue
-{
-protected:
-	TKey Key;
-	PTDataValue pValue;
-	virtual void Print()
-	{
-		std::cout << Key << " " << pValue->ToString() << std::endl;
-	}
+class TTabRecord : public TDataValue {
 public:
-	TTabRecord(TKey key, PTDataValue val) {
-		Key = key;
-		pValue = val;
+	TTabRecord(const TKey &key, PTDataValue val) {
+      m_Key = key;
+      m_Value = val->GetCopy();
 	}
-	void SetKey(TKey key) {
-		Key = key;
+
+    ~TTabRecord() override {
+      delete m_Value;
+    }
+	void SetKey(const TKey &key) {
+      m_Key = key;
 	}
 	TKey GetKey() {
-		return Key;
+		return m_Key;
 	}
 	void SetValue(PTDataValue p) {
-		pValue = p;
+      if (m_Value != nullptr) {
+        delete m_Value;
+      }
+      m_Value = p->GetCopy();
 	}
 	PTDataValue GetValue() {
-		return pValue;
+		return m_Value;
 	}
-	virtual TDataValue* GetCopy() override {
-		return new TTabRecord(Key, pValue); //!!!!!!
+	TDataValue* GetCopy() override {
+		return new TTabRecord(m_Key, m_Value);
 	}
 	TTabRecord& operator=(const TTabRecord& tr) {
-		Key = tr.Key;
-		pValue = tr.pValue;
+      if (this == &tr) {
+        return *this;
+      }
+      m_Key = tr.m_Key;
+      m_Value = tr.m_Value->GetCopy();
+
+      return *this;
 	}
 	virtual bool operator==(const TTabRecord& tr) const {
-		return Key == tr.Key;
+		return m_Key == tr.m_Key;
 	}
 	virtual bool operator>(const TTabRecord& tr) const {
-		return Key > tr.Key;
+		return m_Key > tr.m_Key;
 	}
 	virtual bool operator<(const TTabRecord& tr) const {
-		return Key < tr.Key;
+		return m_Key < tr.m_Key;
 	}
 
 	std::string ToString() override {
+      std::stringstream ss;
 
+      ss << "m_Key: " << m_Key << " Value: " << m_Value->ToString();
+      return ss.str();
 	}
 	friend class TArrayTable;
 	friend class TSortTable;
@@ -59,4 +68,10 @@ public:
 	friend class TArrayHashTable;
 	friend class TListHashTable;
 
+protected:
+  TKey m_Key;
+  PTDataValue m_Value;
+  virtual void Print() {
+    std::cout << ToString() << std::endl;
+  }
 };

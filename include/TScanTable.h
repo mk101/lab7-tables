@@ -1,26 +1,56 @@
 #pragma once
 #include "TArrayTable.h"
 
-class TScanTable :public TArrayTable {
+class TScanTable : public TArrayTable {
 public:
-	TScanTable(int size = 25):TArrayTable(size) { }
-	virtual PTDataValue FindRecord(TKey k) {
-		SetRetCode(TabOK);
-		int i;
-		for (i = 0; i < DataCount; i++) {
-			if (pRecs[i]->Key == k)
-				break;
-		}
-		Efficiency = i + 1;
-		if (i < DataCount)
-		{
-			CurPos = i;
-			return pRecs[i]->pValue;
-		}
-		SetRetCode(TabNoRecord);
-		return nullptr;
-	}
-	virtual void InsRecord(TKey k, PTDataValue pVal); //создать ttabrecord и вставить в конец
-	virtual void DelRecord(TKey k); //найти элемент, который нужно удалить(findrecord) и переместить последний
-	                                //элемент переместить на место удаляемого, очистить память от старого элемента
+  explicit TScanTable(int size = 25) : TArrayTable(size) { }
+  TScanTable(const TScanTable &t) : TArrayTable(t) {}
+  //TODO: ? operator =
+
+  PTDataValue FindRecord(const TKey &k) override {
+    SetRetCode(TabOK);
+    int i;
+    for (i = 0; i < m_DataCount; i++) {
+        if (m_Records[i]->m_Key == k) {
+          break;
+        }
+    }
+    m_Efficiency = i + 1;
+    if (i < m_DataCount) {
+      m_CurrentPosition = i;
+        return m_Records[i]->m_Value;
+    }
+    SetRetCode(TabNoRecord);
+    return nullptr;
+  }
+
+  void InsertRecord(const TKey &k, PTDataValue pVal) override {
+    SetRetCode(TabOK);
+
+    if (this->IsFull()) {
+      SetRetCode(TabFull);
+      return;
+    }
+
+    this->m_Records[this->m_CurrentPosition++] = new TTabRecord(k, pVal);
+    this->m_DataCount++;
+  }
+
+  //РЅР°Р№С‚Рё СЌР»РµРјРµРЅС‚, РєРѕС‚РѕСЂС‹Р№ РЅСѓР¶РЅРѕ СѓРґР°Р»РёС‚СЊ(findrecord) Рё РїРµСЂРµРјРµСЃС‚РёС‚СЊ РїРѕСЃР»РµРґРЅРёР№
+  // СЌР»РµРјРµРЅС‚ РїРµСЂРµРјРµСЃС‚РёС‚СЊ РЅР° РјРµСЃС‚Рѕ СѓРґР°Р»СЏРµРјРѕРіРѕ, РѕС‡РёСЃС‚РёС‚СЊ РїР°РјСЏС‚СЊ РѕС‚ СЃС‚Р°СЂРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
+  int DeleteRecord(const TKey &k) override {
+    auto record = FindRecord(k);
+
+    if (record == nullptr) {
+      return TabNoRecord;
+    }
+
+    SetRetCode(TabOK);
+    m_Records[m_CurrentPosition] = dynamic_cast<PTTabRecord>(GetValuePtr(TDataPos::Last_pos));
+    delete record;
+
+    m_DataCount--;
+
+    return TabOK;
+  }
 };

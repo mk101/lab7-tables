@@ -10,41 +10,43 @@
 #define TabNoMem -105
 typedef std::string TKey;
 
-class TTable : public TDataCom
-{
-protected:
-	int DataCount;
-	int Efficiency;
+class TTable : public TDataCom {
 public:
 	TTable() {
-		DataCount = 0;
-		Efficiency = 0;
-		
+      m_DataCount = 0;
+      m_Efficiency = 0;
 	}
-	virtual ~TTable() {}
-	int GetDataCount() {
-		return DataCount;
+    TTable(const TTable &t) = default;
+    TTable &operator=(const TTable &t) = default;
+	virtual ~TTable() = default;
+
+	[[nodiscard]] int GetDataCount() const {
+		return m_DataCount;
 	}
-	int GetEfficiency() {
-		return Efficiency;
+	[[nodiscard]] int GetEfficiency() const {
+		return m_Efficiency;
 	}
-	bool IsEmpty() const {
-		return DataCount == 0;
+	[[nodiscard]] bool IsEmpty() const {
+		return m_DataCount == 0;
 	}
-	virtual bool IsFull() = 0;
-	virtual PTDataValue FindRecord(TKey key) = 0;
-	virtual void InsRecord(TKey k, PTDataValue pVal) = 0;
-	virtual int Dalete(TKey k) = 0;
+	[[nodiscard]] virtual bool IsFull() const = 0;
+	virtual PTDataValue FindRecord(const TKey &key) = 0;
+	virtual void InsertRecord(const TKey &k, PTDataValue pVal) = 0;
+	virtual int DeleteRecord(const TKey &k) = 0;
 	virtual bool Reset() = 0;
 	virtual bool GoNext() = 0;
-	virtual bool IsTabEnded() = 0;
-	virtual TKey GetKey() const = 0;
-	virtual PTDataValue GetValue() const = 0;
+	virtual bool IsTabEnded() const = 0;
+	[[nodiscard]] virtual TKey GetKey() const = 0;
+	[[nodiscard]] virtual PTDataValue GetValue() const = 0;
+
 	friend std::ostream &operator<<(std::ostream& os, TTable& tab) {
-		for (tab.Reset(); !tab.IsTabEnded(); tab.GoNext())
-		{
-			os << "Key: " << tab.GetKey() << " Val: " << tab.GetValue()->ToString() << std::endl;
+		for (tab.Reset(); !tab.IsTabEnded(); tab.GoNext()) {
+			os << "m_Key: " << tab.GetKey() << " Val: " << tab.GetValue()->ToString() << std::endl;
 		}
 		return os;
 	}
+
+protected:
+  int m_DataCount;
+  int m_Efficiency;
 };

@@ -3,14 +3,14 @@
 #define DataErr -1
 
 class TDataCom {
-protected:
-	int RetCode;
-	void SetRetCode(const int retCode) {
-		RetCode = retCode;
-	};
 public:
-
-	TDataCom() {};
-	int GetRetCode();
-
+  TDataCom() : m_RetCode(DataOk) {}
+  [[nodiscard]] int GetRetCode() const {
+    return m_RetCode;
+  }
+protected:
+  int m_RetCode;
+  void SetRetCode(const int retCode) {
+    m_RetCode = retCode;
+  };
 };
