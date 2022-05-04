@@ -46,7 +46,8 @@ public:
     }
 
     SetRetCode(TabOK);
-    m_Records[m_CurrentPosition] = dynamic_cast<PTTabRecord>(GetValuePtr(TDataPos::Last_pos));
+    m_Records[m_CurrentPosition] = dynamic_cast<PTTabRecord>(m_Records[m_DataCount - 1]->GetCopy());
+    delete m_Records[m_DataCount - 1];
     delete record;
 
     m_DataCount--;

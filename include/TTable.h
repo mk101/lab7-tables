@@ -35,13 +35,13 @@ public:
 	virtual int DeleteRecord(const TKey &k) = 0;
 	virtual bool Reset() = 0;
 	virtual bool GoNext() = 0;
-	virtual bool IsTabEnded() const = 0;
+	[[nodiscard]] virtual bool IsTabEnded() const = 0;
 	[[nodiscard]] virtual TKey GetKey() const = 0;
 	[[nodiscard]] virtual PTDataValue GetValue() const = 0;
 
 	friend std::ostream &operator<<(std::ostream& os, TTable& tab) {
 		for (tab.Reset(); !tab.IsTabEnded(); tab.GoNext()) {
-			os << "m_Key: " << tab.GetKey() << " Val: " << tab.GetValue()->ToString() << std::endl;
+			os << '[' << "Key: " << tab.GetKey() << " Value: " << tab.GetValue()->ToString() << ']' << std::endl;
 		}
 		return os;
 	}
@@ -50,3 +50,5 @@ protected:
   int m_DataCount;
   int m_Efficiency;
 };
+
+typedef TTable *PTTable;
