@@ -32,8 +32,7 @@ public:
       return;
     }
 
-    this->m_Records[this->m_CurrentPosition++] = new TTabRecord(k, pVal);
-    this->m_DataCount++;
+    this->m_Records[this->m_DataCount++] = new TTabRecord(k, pVal);
   }
 
   //найти элемент, который нужно удалить(findrecord) и переместить последний
