@@ -2,19 +2,11 @@
 
 #include "TScanTable.h"
 #include "TSortTable.h"
+#include "TListHashTable.h"
 #include "CSVParser.h"
 
 int main() {
-  auto *table = new TSortTable(3);
-
-//  auto petrovMarks = new TVectorValue({new TIntValue(4), new TIntValue(5), new TIntValue(4)});
-//  auto ivanovMarks = new TVectorValue({new TIntValue(3), new TIntValue(4), new TIntValue(2)});
-//
-//  table.InsertRecord("Petrov", petrovMarks);
-//  table.InsertRecord("Ivanov", ivanovMarks);
-//
-//  delete petrovMarks;
-//  delete ivanovMarks;
+  auto *table = new TListHashTable();
 
   std::cout << "============Import CSV============" << std::endl;
   std::cout << "Importing...";
