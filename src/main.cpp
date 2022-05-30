@@ -51,6 +51,20 @@ int main() {
     std::cout << "Failed" << std::endl;
   }
 
+  std::cout << "============Insert============" << std::endl;
+  std::cout << "Insert Petrov...";
+  auto newPetrovMarks = new TVectorValue({new TIntValue(5), new TIntValue(5)});
+  table->InsertRecord("Petrov", newPetrovMarks);
+  delete newPetrovMarks;
+
+  if (table->GetRetCode() == TabFull) {
+    std::cout << "Failed" << std::endl;
+  } else {
+    std::cout << "OK" << std::endl;
+  }
+
+  std::cout << std::endl;
+
   std::cout << "Final table view:" << std::endl;
   std::cout << *table;
 
