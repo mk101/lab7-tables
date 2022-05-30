@@ -32,7 +32,7 @@ public:
 	[[nodiscard]] virtual bool IsFull() const = 0;
 	virtual PTDataValue FindRecord(const TKey &key) = 0;
 	virtual void InsertRecord(const TKey &k, PTDataValue pVal) = 0;
-	virtual int DeleteRecord(const TKey &k) = 0;
+	virtual void DeleteRecord(const TKey &k) = 0;
 	virtual bool Reset() = 0;
 	virtual bool GoNext() = 0;
 	[[nodiscard]] virtual bool IsTabEnded() const = 0;

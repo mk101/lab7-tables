@@ -38,11 +38,11 @@ public:
 
   //найти элемент, который нужно удалить(findrecord) и переместить последний
   // элемент переместить на место удаляемого, очистить память от старого элемента
-  int DeleteRecord(const TKey &k) override {
+  void DeleteRecord(const TKey &k) override {
     auto record = FindRecord(k);
 
     if (record == nullptr) {
-      return TabNoRecord;
+      SetRetCode(TabNoRecord);
     }
 
     SetRetCode(TabOK);
@@ -51,7 +51,5 @@ public:
     delete record;
 
     m_DataCount--;
-
-    return TabOK;
   }
 };

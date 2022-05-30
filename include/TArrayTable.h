@@ -7,9 +7,9 @@ enum class TDataPos{First_pos,Current_pos,Last_pos};
 
 class TArrayTable : public TTable {
 public:
-  explicit TArrayTable(int size = 100) : m_TabSize(size) {
-    m_Records = new PTTabRecord[m_TabSize];
-      for (int i = 0; i < m_TabSize; i++) {
+  explicit TArrayTable(int size = 100) : m_TableSize(size) {
+    m_Records = new PTTabRecord[m_TableSize];
+      for (int i = 0; i < m_TableSize; i++) {
         m_Records[i] = nullptr;
       }
     m_CurrentPosition = 0;
@@ -24,10 +24,10 @@ public:
 
   TArrayTable(const TArrayTable &t)  : TTable(t) {
     m_CurrentPosition = t.m_CurrentPosition;
-    m_TabSize = t.m_TabSize;
+    m_TableSize = t.m_TableSize;
 
-    m_Records = new PTTabRecord[m_TabSize];
-    for (int i = 0; i < m_TabSize; i++) {
+    m_Records = new PTTabRecord[m_TableSize];
+    for (int i = 0; i < m_TableSize; i++) {
       m_Records[i] = dynamic_cast<TTabRecord*>(t.m_Records[i]->GetCopy());
     }
   }
@@ -38,20 +38,20 @@ public:
     }
 
     m_CurrentPosition = t.m_CurrentPosition;
-    m_TabSize = t.m_TabSize;
+    m_TableSize = t.m_TableSize;
 
-    m_Records = new PTTabRecord[m_TabSize];
-    for (int i = 0; i < m_TabSize; i++) {
+    m_Records = new PTTabRecord[m_TableSize];
+    for (int i = 0; i < m_TableSize; i++) {
       m_Records[i] = dynamic_cast<TTabRecord*>(t.m_Records[i]->GetCopy());
     }
 
     return *this;
   }
   [[nodiscard]] bool IsFull() const override {
-      return m_DataCount >= m_TabSize;
+      return m_DataCount >= m_TableSize;
   }
   [[nodiscard]] int GetTabSize() const {
-      return m_TabSize;
+      return m_TableSize;
   }
   [[nodiscard]] TKey GetKey() const override {
       return GetKey(TDataPos::Current_pos); //либо реализовать самим метод получения с позиции
@@ -119,8 +119,11 @@ public:
   [[nodiscard]] PTDataValue GetValue() const override {
     return GetValuePtr();
   }
+
+  friend TSortTable;
+  friend TScanTable;
  protected:
   PTTabRecord* m_Records;
-  int m_TabSize;
+  int m_TableSize;
   int m_CurrentPosition;
 };

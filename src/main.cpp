@@ -1,10 +1,11 @@
 #include <iostream>
 
 #include "TScanTable.h"
+#include "TSortTable.h"
 #include "CSVParser.h"
 
 int main() {
-  auto *table = new TScanTable(3);
+  auto *table = new TSortTable(3);
 
 //  auto petrovMarks = new TVectorValue({new TIntValue(4), new TIntValue(5), new TIntValue(4)});
 //  auto ivanovMarks = new TVectorValue({new TIntValue(3), new TIntValue(4), new TIntValue(2)});
